@@ -45,7 +45,10 @@ const login = async (req: Request<ILogin>, res: Response, next: NextFunction) =>
 
   const existingToken: ITokenResponse = await db("tokens").where("userId", user.id).first()
 
-  if (existingToken  && new Date(existingToken.expiresIn) >= new Date()) {
+  if (existingToken) {
+    if (new Date(existingToken.expiresIn) < new Date()) {
+      return next(new CustomError('Invalid Credentials', 401, req.path));
+    }
     const { accessTokenJWT, refreshTokenJWT } = attchJWTtoCookies(res, { sub: user.id }, existingToken.refreshToken);
     return res.status(200).json({
       user: {
