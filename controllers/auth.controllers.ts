@@ -2,42 +2,37 @@ import { NextFunction, Request, Response } from "express";
 import db from "../config/database";
 import bcrypt from "bcrypt";
 import CustomError from "../utils/errorHandler";
-import { ILogin, IReqAuth, IUserRequest, IUserResponse } from "../models/user";
+import { ILogin, IReqAuth, IUserResponse } from "../models/user";
 import { attchJWTtoCookies, verifyRefreshTokenJwt } from "../utils/jwt";
 import crypto from "crypto"
 import { IDecodedRefreshToken, ITokenResponse } from "../models/token";
 
 
-const register = async (req: Request<IUserRequest>, res: Response, next: NextFunction) => {
-  try {
-    const { firstName, lastName, email, password } = req.body;
+const register = async (req: Request, res: Response, next: NextFunction) => {
+  const { firstName, lastName, email, password } = req.body;
 
-    const existingUser = await db("users").where("email", email).first();
-    if (existingUser) {
-      return next(new CustomError("Email already exists", 400, req.path))
-    }
-    const hashedPassword = await bcrypt.hash(password, 12);
-    
-    const [newUserId] = await db("users").insert({
-      firstName,
-      lastName,
-      email,
-      hash: hashedPassword,
-    });
-  
-    const newUser = {
-      id: newUserId,
-      firstName,
-      lastName,
-      email,
-      displayName: `${firstName} ${lastName}`
-    }
-  
-    res.status(201).json(newUser);
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  } catch (error: any) {
-    return res.status(500).json({ msg: error.message })
+  const existingUser = await db("users").where("email", email).first();
+  if (existingUser) {
+    return next(new CustomError("Email already exists", 400, req.path))
   }
+  const hashedPassword = await bcrypt.hash(password, 12);
+  
+  const [newUserId] = await db("users").insert({
+    firstName,
+    lastName,
+    email,
+    hash: hashedPassword,
+  });
+
+  const newUser = {
+    id: newUserId,
+    firstName,
+    lastName,
+    email,
+    displayName: `${firstName} ${lastName}`
+  }
+
+  res.status(201).json(newUser);
 }
 
 const login = async (req: Request<ILogin>, res: Response, next: NextFunction) => {
@@ -65,10 +60,12 @@ const login = async (req: Request<ILogin>, res: Response, next: NextFunction) =>
   }
 
   const refreshToken = crypto.randomBytes(60).toString("hex");
-  const expiresIn = new Date(Date.now() + 1000 * 60 * 60 * 24 * 30).toISOString();
-  await db("tokens").insert({ refreshToken, expiresIn, userId: user.id });
-  const { accessTokenJWT, refreshTokenJWT } = attchJWTtoCookies(res, { sub: user.id }, refreshToken);
+  const oneMonth = 1000 * 60 * 60 * 24 * 30
+  const expiresIn = new Date(Date.now() + oneMonth).toISOString();
 
+  await db("tokens").insert({ refreshToken, expiresIn, userId: user.id });
+
+  const { accessTokenJWT, refreshTokenJWT } = attchJWTtoCookies(res, { sub: user.id }, refreshToken);
   res.status(200).json({
     user: {
       firstName: user.firstName,

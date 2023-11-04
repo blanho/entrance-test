@@ -12,7 +12,7 @@ export function setupSwagger(app: any) {
         description: 'Entrance Test',
       },
     },
-    apis: ['./routes/*.ts'], // Path to the API routes files
+    apis: ['./routes/*.ts']
   };
 
   const swaggerSpec = swaggerJSDoc(swaggerOptions);
