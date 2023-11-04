@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import CustomError from "../utils/errorHandler";
 import { ILogin, IUserRequest } from "../models/user";
 
-export const validRegister = async (req: Request<IUserRequest>, res: Response, next: NextFunction) => {
+export const validRegistration = async (req: Request<IUserRequest>, res: Response, next: NextFunction) => {
     const { firstName, lastName, email, password } = req.body 
     if (!firstName || !lastName || !email || !password) {
         return next(new CustomError("Please provide all values", 400, req.path))

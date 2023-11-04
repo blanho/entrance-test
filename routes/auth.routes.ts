@@ -1,6 +1,6 @@
 import express from "express";
 import { login, logout, refreshToken, register } from "../controllers/auth.controllers";
-import { validLogin, validRegister } from "../validators/auth";
+import { validLogin, validRegistration } from "../validators/auth";
 import { authenticatedUser } from "../middleware/authN";
 
 const router = express.Router();
@@ -37,7 +37,7 @@ const router = express.Router();
  *       400:
  *         description: Email already exists
  */
-router.post('/sign-up', validRegister, register);
+router.post('/sign-up', validRegistration, register);
 
 router.post('/sign-in', validLogin, login)
 
