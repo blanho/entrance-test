@@ -2,13 +2,13 @@ import { NextFunction, Request, Response } from "express";
 import db from "../config/database";
 import bcrypt from "bcrypt";
 import CustomError from "../utils/errorHandler";
-import { ILogin, IReqAuth, IUserResponse } from "../models/user";
+import { ILogin, IReqAuth, IUserRequest, IUserResponse } from "../models/user";
 import { attchJWTtoCookies, verifyRefreshTokenJwt } from "../utils/jwt";
 import crypto from "crypto"
 import { IDecodedRefreshToken, ITokenResponse } from "../models/token";
 
 
-const register = async (req: Request, res: Response, next: NextFunction) => {
+const register = async (req: Request<IUserRequest>, res: Response, next: NextFunction) => {
   const { firstName, lastName, email, password } = req.body;
 
   const existingUser = await db("users").where("email", email).first();
