@@ -1,5 +1,6 @@
 import { register } from "../controllers/auth.controllers";
 import { Request, Response } from "express";
+import { IUserRequest } from "../models/user";
 
 
 const mockRequest = {
@@ -9,7 +10,7 @@ const mockRequest = {
     email: "h.baolan20025@gmail.com",
     password: "123456789",
   },
-} as unknown as Request
+} as unknown as Request<IUserRequest>
 
 const mockResponse = {
   status: jest.fn().mockReturnThis(),
