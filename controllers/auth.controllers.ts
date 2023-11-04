@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import db from "../config/dbConfig";
+import db from "../config/database";
 import bcrypt from "bcrypt";
 import CustomError from "../utils/errorHandler";
 import { ILogin, IReqAuth, IUserRequest, IUserResponse } from "../models/user";
@@ -102,15 +102,15 @@ const logout = async (req: IReqAuth, res: Response) => {
 const refreshToken = async (req: IReqAuth, res: Response, next: NextFunction) => {
   try {
     const payload = verifyRefreshTokenJwt(req.body.refreshToken) as IDecodedRefreshToken
-    
-    const existingToken: ITokenResponse = await db('tokens').where('userId', payload.user.sub).andWhere('refreshToken', payload.refreshToken).first()
-    if (!existingToken) {
+    if (!payload) {
       next(new CustomError("Refresh Token doesn't exist", 404, req.path))
     }
-    if (new Date(existingToken.expiresIn) < new Date()) {
+    
+    const existingToken: ITokenResponse = await db('tokens').where('userId', payload.user.sub).andWhere('refreshToken', payload.refreshToken).first()
+    if (!existingToken || new Date(existingToken.expiresIn) < new Date()) {
       next(new CustomError("Unauthenticated user", 401, req.path))
     }
-  
+    
     const { accessTokenJWT, refreshTokenJWT } = attchJWTtoCookies(res, { sub: payload.user.sub }, existingToken.refreshToken);
   
     res.status(200).json({

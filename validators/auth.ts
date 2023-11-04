@@ -7,7 +7,7 @@ export const validRegister = async (req: Request<IUserRequest>, res: Response, n
     if (!firstName || !lastName || !email || !password) {
         return next(new CustomError("Please provide all values", 400, req.path))
     }
-    if (!isValidEmail(email)) {
+    if (!isValidEmail(email)) { 
         return next(new CustomError("Please provide a valid email", 400, req.path)) 
     }
     if (!isValidPassword(password)) {

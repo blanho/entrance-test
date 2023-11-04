@@ -2,7 +2,7 @@ import { NextFunction, Response } from "express";
 import { verifyAccessTokenJwt } from "../utils/jwt";
 import CustomError from "../utils/errorHandler";
 import { IReqAuth } from "../models/user";
-import db from "../config/dbConfig";
+import db from "../config/database";
 import { IDecodedAccessToken } from "../models/token";
 
 export const authenticatedUser = async (req: IReqAuth, res: Response, next: NextFunction) => {

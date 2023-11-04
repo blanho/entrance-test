@@ -22,7 +22,6 @@ export const generateRefreshToken = (payload: object) => {
 };
 
 export const attchJWTtoCookies = (res: Response, payload: object, refreshToken: string) => {
-  console.log(payload)
   const accessTokenJWT = generateAccessToken(payload)
   const refreshTokenJWT = generateRefreshToken({
     user: {...payload },

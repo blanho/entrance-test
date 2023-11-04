@@ -7,6 +7,8 @@ import morgan from "morgan";
 import cookieParser from "cookie-parser";
 import authRouter from "./routes/auth.routes";
 import errorHandling from './middleware/errors';
+import { setupSwagger } from './config/swagger';
+
 
 
 const app: Application = express();
@@ -18,8 +20,10 @@ app.use(cors())
 app.use(morgan('dev'));
 app.use(cookieParser(process.env.REFRESH_TOKEN_SECRET_KEY));
 
+setupSwagger(app)
 
-app.use("/api/v1", authRouter)
+
+app.use("/api/v1/auth", authRouter)
 
 app.use(errorHandling)
 
